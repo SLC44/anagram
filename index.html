@@ -483,6 +483,51 @@
       40%      { box-shadow: 0 0 0 1px var(--orange), 0 0 50px var(--orange-glow); }
     }
 
+    /* ── New high score ── */
+    #device.new-high {
+      animation: dev-new-high 1.4s ease;
+    }
+    @keyframes dev-new-high {
+      0%,100% { box-shadow: none; }
+      20%     { box-shadow: 0 0 0 2px var(--orange), 0 0 90px rgba(255,92,0,0.55); }
+      55%     { box-shadow: 0 0 0 2px var(--orange), 0 0 130px rgba(255,92,0,0.4); }
+      80%     { box-shadow: 0 0 0 1px var(--orange), 0 0 60px rgba(255,92,0,0.2); }
+    }
+
+    #hs-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      padding-top: 1.5rem;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    #hs-banner span {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #000;
+      background: var(--orange);
+      padding: 0.55rem 1.4rem;
+      opacity: 0;
+    }
+
+    #hs-banner.fire span {
+      animation: hs-drop 2.8s ease forwards;
+    }
+
+    @keyframes hs-drop {
+      0%   { opacity: 0; transform: translateY(-30px); }
+      12%  { opacity: 1; transform: translateY(0); }
+      72%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
     /* ── Confetti ── */
     .cp {
       position: fixed;
@@ -529,6 +574,8 @@
   <div class="ss-instructions">Find the hidden word before the time runs out</div>
   <button id="start-btn" onclick="startGame()">Start Game</button>
 </div>
+
+<div id="hs-banner"><span>&#x2605; New High Score &#x2605;</span></div>
 
 <div id="device">
   <span class="corner tl"></span>
@@ -859,16 +906,57 @@
     }
   }
 
+  function newHighAnim() {
+    const dev = document.getElementById('device');
+    dev.classList.remove('new-high');
+    void dev.offsetWidth;
+    dev.classList.add('new-high');
+    const banner = document.getElementById('hs-banner');
+    banner.classList.remove('fire');
+    void banner.offsetWidth;
+    banner.classList.add('fire');
+  }
+
+  function bigConfetti() {
+    const colors = ['#FF5C00','#FF8040','#FFFFFF','#E0E0E0','#CC4A00','#FFB380','#FFD700','#FF3300'];
+    for (let i = 0; i < 160; i++) {
+      const p = document.createElement('div');
+      p.className = 'cp';
+      const rect = Math.random() > 0.4;
+      p.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        top: -12px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${rect ? Math.random() * 4 + 2 : Math.random() * 8 + 5}px;
+        height: ${rect ? Math.random() * 16 + 10 : Math.random() * 8 + 5}px;
+        animation-duration: ${1.4 + Math.random() * 1.4}s;
+        animation-delay: ${Math.random() * 0.8}s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 3500);
+    }
+  }
+
   function acceptCorrect() {
     stopTimer();
     score++; streak++;
     updateBoard();
-    setMsg('Correct', '#FF5C00');
-    winTiles();
-    confetti();
+    const prev = parseInt(localStorage.getItem('scrambled-hs') || '0', 10);
+    const isNewHigh = score > prev;
+    if (isNewHigh) {
+      localStorage.setItem('scrambled-hs', score);
+      setMsg('New High Score!', '#FF5C00');
+      winTiles();
+      bigConfetti();
+      newHighAnim();
+    } else {
+      setMsg('Correct', '#FF5C00');
+      winTiles();
+      confetti();
+    }
     document.getElementById('guess').disabled = true;
     document.getElementById('enter-btn').disabled = true;
-    setTimeout(newRound, 1700);
+    setTimeout(newRound, isNewHigh ? 2400 : 1700);
   }
 
   function rejectGuess() {
