@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
   <title>ANAGRAM — AG-01</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
@@ -113,7 +113,7 @@
       display: flex;
       gap: 7px;
       justify-content: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       min-height: 68px;
       align-items: center;
     }
@@ -467,6 +467,31 @@
       0%   { opacity: 1;   transform: translateY(-10px) rotate(0deg); }
       70%  { opacity: 0.8; }
       100% { opacity: 0;   transform: translateY(110vh) rotate(600deg); }
+    }
+    /* ── Mobile ── */
+    @media (max-width: 540px) {
+      body {
+        align-items: flex-start;
+        padding: 1.5rem 0 2rem;
+      }
+
+      #device {
+        padding: 2rem 1.25rem 1.5rem;
+      }
+
+      #tiles {
+        gap: 5px;
+        min-height: 54px;
+      }
+
+      .tile {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        max-width: 56px;
+        height: 54px;
+        font-size: 1.3rem;
+      }
     }
   </style>
 </head>
