@@ -377,7 +377,21 @@
       font-weight: 700;
       color: var(--white);
       line-height: 1;
+      margin-bottom: 1.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .go-hs-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
       margin-bottom: 2.5rem;
+    }
+
+    .go-hs {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--orange);
       font-variant-numeric: tabular-nums;
     }
 
@@ -584,6 +598,10 @@
     <div class="go-header">&#x2014; Game Over &#x2014;</div>
     <div class="go-lbl">Final Score</div>
     <div class="go-score" id="go-score">00</div>
+    <div class="go-hs-row">
+      <span class="go-lbl">High Score</span>
+      <span class="go-hs" id="go-hs">00</span>
+    </div>
     <button id="restart-btn" onclick="restartGame()">Play Again</button>
   </div>
 </div>
@@ -897,7 +915,11 @@
 
   function gameOver() {
     stopTimer();
+    const prev = parseInt(localStorage.getItem('scrambled-hs') || '0', 10);
+    const hs = Math.max(score, prev);
+    localStorage.setItem('scrambled-hs', hs);
     document.getElementById('go-score').textContent = pad(score);
+    document.getElementById('go-hs').textContent = pad(hs);
     document.getElementById('game-over').classList.add('active');
   }
 
