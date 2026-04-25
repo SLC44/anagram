@@ -706,21 +706,21 @@
     updateLives();
     updateBoard();
     renderTiles(currentWord);
-    document.getElementById(‘guess’).disabled = true;
-    document.getElementById(‘enter-btn’).disabled = true;
+    document.getElementById('guess').disabled = true;
+    document.getElementById('enter-btn').disabled = true;
     if (lives <= 0) {
-      setMsg(`Time’s up — ${currentWord.toUpperCase()}`, ‘#CC2200’);
+      setMsg(`Time's up — ${currentWord.toUpperCase()}`, '#CC2200');
       setTimeout(gameOver, 1800);
     } else {
-      setMsg(`Time’s up — the word was ${currentWord.toUpperCase()}`, ‘#CC2200’);
-      document.getElementById(‘msg-bar’).style.marginBottom = ‘0.6rem’;
-      document.getElementById(‘continue-btn’).style.display = ‘block’;
+      setMsg(`Time's up — the word was ${currentWord.toUpperCase()}`, '#CC2200');
+      document.getElementById('msg-bar').style.marginBottom = '0.6rem';
+      document.getElementById('continue-btn').style.display = 'block';
     }
   }
 
   function continueRound() {
-    document.getElementById(‘continue-btn’).style.display = ‘none’;
-    document.getElementById(‘msg-bar’).style.marginBottom = ‘’;
+    document.getElementById('continue-btn').style.display = 'none';
+    document.getElementById('msg-bar').style.marginBottom = '';
     newRound();
   }
 
