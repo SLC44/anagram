@@ -14,7 +14,7 @@
       --orange:      #FF5C00;
       --orange-glow: #FF5C0020;
       --white:       #E6E6E6;
-      --muted:       #686868;
+      --muted:       #909090;
       --border:      #2C2C2C;
       --red:         #CC2200;
     }
@@ -24,7 +24,7 @@
     body {
       min-height: 100vh;
       background: var(--bg);
-      background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+      background-image: radial-gradient(circle, #2A2A2A 1px, transparent 1px);
       background-size: 22px 22px;
       display: flex;
       align-items: center;
@@ -404,7 +404,7 @@
       position: fixed;
       inset: 0;
       background: var(--bg);
-      background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+      background-image: radial-gradient(circle, #2A2A2A 1px, transparent 1px);
       background-size: 22px 22px;
       flex-direction: column;
       align-items: center;
@@ -861,8 +861,18 @@
     newRound();
   }
 
-  document.getElementById('guess').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkGuess();
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (document.getElementById('start-screen').classList.contains('active')) {
+      startGame(); return;
+    }
+    if (document.getElementById('game-over').classList.contains('active')) {
+      restartGame(); return;
+    }
+    if (document.getElementById('continue-btn').style.display === 'block') {
+      continueRound(); return;
+    }
+    checkGuess();
   });
 </script>
 
