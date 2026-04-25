@@ -361,7 +361,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    #restart-btn, #start-btn {
+    #restart-btn {
       background: transparent;
       color: var(--orange);
       border: 1px solid var(--orange);
@@ -375,18 +375,58 @@
       transition: background 0.12s, color 0.12s;
     }
 
-    #restart-btn:hover,  #start-btn:hover  { background: var(--orange); color: #000; }
-    #restart-btn:active, #start-btn:active { background: #CC4A00; border-color: #CC4A00; color: #000; }
+    #restart-btn:hover  { background: var(--orange); color: #000; }
+    #restart-btn:active { background: #CC4A00; border-color: #CC4A00; color: #000; }
 
-    .ss-meta {
-      font-size: 0.46rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 2.5rem;
+    /* ── Start screen (full-viewport) ── */
+    #start-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      background-image: radial-gradient(circle, #181818 1px, transparent 1px);
+      background-size: 22px 22px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
     }
 
-    #start-screen .go-header { color: var(--orange); }
+    #start-screen.active { display: flex; }
+
+    .ss-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.6rem;
+    }
+
+    .ss-sub {
+      font-size: 0.46rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.8rem;
+    }
+
+    #start-btn {
+      background: var(--orange);
+      color: #000;
+      border: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 1rem 2.8rem;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    #start-btn:hover  { background: #FF7733; }
+    #start-btn:active { background: #CC4A00; }
 
     /* ── Success glow ── */
     #device.success {
@@ -411,6 +451,12 @@
   </style>
 </head>
 <body>
+
+<div id="start-screen" class="active">
+  <div class="ss-title">Anagram</div>
+  <div class="ss-sub">Model AG&#x2013;01 &nbsp;&bull;&nbsp; 10 sec &nbsp;&bull;&nbsp; 3 lives</div>
+  <button id="start-btn" onclick="startGame()">Start Game</button>
+</div>
 
 <div id="device">
   <span class="corner tl"></span>
@@ -468,17 +514,6 @@
   <div class="dev-foot">
     <span class="foot-txt">Word Game Unit &mdash; S/N 4096</span>
     <span class="foot-txt">&copy; 2026</span>
-  </div>
-
-  <div id="start-screen" class="active">
-    <span class="corner tl"></span>
-    <span class="corner tr"></span>
-    <span class="corner bl"></span>
-    <span class="corner br"></span>
-    <div class="go-header">&#x2014; Anagram &#x2014;</div>
-    <div class="go-lbl">Model AG&#x2013;01 &nbsp;/&nbsp; Rev.3</div>
-    <div class="ss-meta">10 seconds &nbsp;&bull;&nbsp; 3 lives</div>
-    <button id="start-btn" onclick="startGame()">Start Game</button>
   </div>
 
   <div id="game-over">
