@@ -665,6 +665,21 @@
     return a.length === b.length && [...a].sort().join('') === [...b].sort().join('');
   }
 
+  let deck = [];
+  let deckIdx = 0;
+
+  function nextWord() {
+    if (deckIdx >= deck.length) {
+      deck = [...wordList];
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      deckIdx = 0;
+    }
+    return deck[deckIdx++];
+  }
+
   let currentWord = '';
   let score = 0;
   let streak = 0;
@@ -761,7 +776,7 @@
   }
 
   function newRound() {
-    currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+    currentWord = nextWord();
     renderTiles(jumble(currentWord));
     document.getElementById('length-lbl').textContent = `${currentWord.length} letters`;
     document.getElementById('guess').value = '';
