@@ -756,26 +756,57 @@
     }
   }
 
-  function checkGuess() {
+  function acceptCorrect() {
+    stopTimer();
+    score++; streak++;
+    updateBoard();
+    setMsg('Correct', '#FF5C00');
+    winTiles();
+    confetti();
+    document.getElementById('guess').disabled = true;
+    document.getElementById('enter-btn').disabled = true;
+    setTimeout(newRound, 1700);
+  }
+
+  function rejectGuess() {
+    const input = document.getElementById('guess');
+    input.disabled = false;
+    document.getElementById('enter-btn').disabled = false;
+    shakeTiles();
+    input.value = '';
+    setMsg('Wrong — try again', '#CC2200');
+    input.focus();
+  }
+
+  async function checkGuess() {
     const input = document.getElementById('guess');
     const guess = input.value.trim().toLowerCase();
     if (!guess) return;
 
-    if (guess === currentWord || (wordSet.has(guess) && isAnagram(guess, currentWord))) {
-      stopTimer();
-      score++; streak++;
-      updateBoard();
-      setMsg('Correct', '#FF5C00');
-      winTiles();
-      confetti();
-      input.disabled = true;
-      document.getElementById('enter-btn').disabled = true;
-      setTimeout(newRound, 1700);
-    } else {
-      shakeTiles();
-      input.value = '';
-      setMsg('Wrong — try again', '#CC2200');
-      input.focus();
+    if (!isAnagram(guess, currentWord)) {
+      rejectGuess();
+      return;
+    }
+
+    if (wordSet.has(guess)) {
+      acceptCorrect();
+      return;
+    }
+
+    // Valid anagram but not in our list — check dictionary
+    input.disabled = true;
+    document.getElementById('enter-btn').disabled = true;
+    setMsg('Checking…', '#3D3D3D');
+
+    try {
+      const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${guess}`);
+      if (res.ok) {
+        acceptCorrect();
+      } else {
+        rejectGuess();
+      }
+    } catch {
+      rejectGuess();
     }
   }
 
