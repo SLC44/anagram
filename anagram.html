@@ -305,6 +305,79 @@
       color: #242424;
     }
 
+    /* ── Timer bar ── */
+    #timer-track {
+      height: 3px;
+      background: #141414;
+      margin-top: 1rem;
+      overflow: hidden;
+    }
+
+    #timer-bar {
+      height: 100%;
+      width: 100%;
+      background: var(--orange);
+      box-shadow: 0 0 6px var(--orange);
+    }
+
+    /* ── Game over overlay ── */
+    #game-over {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: var(--surface);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      padding: 2.5rem;
+    }
+
+    #game-over.active { display: flex; }
+
+    .go-header {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 2.5rem;
+    }
+
+    .go-lbl {
+      font-size: 0.48rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .go-score {
+      font-size: 5rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 2.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #restart-btn {
+      background: transparent;
+      color: var(--orange);
+      border: 1px solid var(--orange);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    #restart-btn:hover  { background: var(--orange); color: #000; }
+    #restart-btn:active { background: #CC4A00; border-color: #CC4A00; color: #000; }
+
     /* ── Success glow ── */
     #device.success {
       animation: dev-glow 0.7s ease;
@@ -349,7 +422,7 @@
     <div class="disp-foot">
       <span id="length-lbl">&#x2014; letters</span>
       <div class="pips-wrap">
-        <span class="pips-lbl">Att</span>
+        <span class="pips-lbl">Lives</span>
         <div class="pips" id="pips">
           <div class="pip"></div>
           <div class="pip"></div>
@@ -357,6 +430,7 @@
         </div>
       </div>
     </div>
+    <div id="timer-track"><div id="timer-bar"></div></div>
   </div>
 
   <div class="lbl">Input</div>
@@ -385,9 +459,23 @@
     <span class="foot-txt">Word Game Unit &mdash; S/N 4096</span>
     <span class="foot-txt">&copy; 2026</span>
   </div>
+
+  <div id="game-over">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+    <div class="go-header">&#x2014; Game Over &#x2014;</div>
+    <div class="go-lbl">Final Score</div>
+    <div class="go-score" id="go-score">00</div>
+    <button id="restart-btn" onclick="restartGame()">Play Again</button>
+  </div>
 </div>
 
 <script>
+  const TIMER_SECONDS = 10;
+  const MAX_LIVES = 3;
+
   const WORDS = [
     'apple','table','chair','piano','stone','cloud','bread','grape','flame','brush',
     'crane','ocean','blade','pearl','frost','amber','tiger','zebra','lemon','melon',
@@ -472,8 +560,8 @@
   let currentWord = '';
   let score = 0;
   let streak = 0;
-  let attempts = 0;
-  const MAX_ATTEMPTS = 3;
+  let lives = MAX_LIVES;
+  let timerTimeout = null;
 
   const pad = n => String(n).padStart(2, '0');
 
@@ -505,8 +593,44 @@
     });
   }
 
-  function updatePips(used) {
-    document.querySelectorAll('.pip').forEach((p, i) => p.classList.toggle('used', i < used));
+  function updateLives() {
+    document.querySelectorAll('.pip').forEach((p, i) =>
+      p.classList.toggle('used', i < (MAX_LIVES - lives)));
+  }
+
+  function startTimer() {
+    clearTimeout(timerTimeout);
+    const bar = document.getElementById('timer-bar');
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+    void bar.offsetWidth;
+    bar.style.transition = `width ${TIMER_SECONDS}s linear`;
+    bar.style.width = '0%';
+    timerTimeout = setTimeout(timeUp, TIMER_SECONDS * 1000);
+  }
+
+  function stopTimer() {
+    clearTimeout(timerTimeout);
+    timerTimeout = null;
+    const bar = document.getElementById('timer-bar');
+    bar.style.transition = 'none';
+  }
+
+  function timeUp() {
+    timerTimeout = null;
+    lives--;
+    streak = 0;
+    updateLives();
+    updateBoard();
+    renderTiles(currentWord);
+    setMsg(`Time’s up — ${currentWord.toUpperCase()}`, '#CC2200');
+    document.getElementById('guess').disabled = true;
+    document.getElementById('enter-btn').disabled = true;
+    if (lives <= 0) {
+      setTimeout(gameOver, 1800);
+    } else {
+      setTimeout(newRound, 1800);
+    }
   }
 
   function setMsg(text, color) {
@@ -522,14 +646,13 @@
 
   function newRound() {
     currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-    attempts = 0;
     renderTiles(jumble(currentWord));
-    updatePips(0);
     document.getElementById('length-lbl').textContent = `${currentWord.length} letters`;
     document.getElementById('guess').value = '';
     document.getElementById('guess').disabled = false;
     document.getElementById('enter-btn').disabled = false;
     setMsg('', '');
+    startTimer();
     document.getElementById('guess').focus();
   }
 
@@ -578,6 +701,7 @@
     if (!guess) return;
 
     if (guess === currentWord) {
+      stopTimer();
       score++; streak++;
       updateBoard();
       setMsg('Correct', '#FF5C00');
@@ -587,24 +711,25 @@
       document.getElementById('enter-btn').disabled = true;
       setTimeout(newRound, 1700);
     } else {
-      attempts++;
-      streak = 0;
-      updateBoard();
-      updatePips(attempts);
       shakeTiles();
       input.value = '';
-
-      if (attempts >= MAX_ATTEMPTS) {
-        setMsg(`Word was: ${currentWord}`, '#CC2200');
-        input.disabled = true;
-        document.getElementById('enter-btn').disabled = true;
-        setTimeout(newRound, 2600);
-      } else {
-        const left = MAX_ATTEMPTS - attempts;
-        setMsg(`Try again — ${left} attempt${left === 1 ? '' : 's'} left`, '#FF5C00');
-        input.focus();
-      }
+      setMsg('Wrong — try again', '#CC2200');
+      input.focus();
     }
+  }
+
+  function gameOver() {
+    stopTimer();
+    document.getElementById('go-score').textContent = pad(score);
+    document.getElementById('game-over').classList.add('active');
+  }
+
+  function restartGame() {
+    score = 0; streak = 0; lives = MAX_LIVES;
+    updateBoard();
+    updateLives();
+    document.getElementById('game-over').classList.remove('active');
+    newRound();
   }
 
   document.getElementById('guess').addEventListener('keydown', e => {
