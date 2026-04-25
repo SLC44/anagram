@@ -361,7 +361,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    #restart-btn {
+    #restart-btn, #start-btn {
       background: transparent;
       color: var(--orange);
       border: 1px solid var(--orange);
@@ -375,8 +375,18 @@
       transition: background 0.12s, color 0.12s;
     }
 
-    #restart-btn:hover  { background: var(--orange); color: #000; }
-    #restart-btn:active { background: #CC4A00; border-color: #CC4A00; color: #000; }
+    #restart-btn:hover,  #start-btn:hover  { background: var(--orange); color: #000; }
+    #restart-btn:active, #start-btn:active { background: #CC4A00; border-color: #CC4A00; color: #000; }
+
+    .ss-meta {
+      font-size: 0.46rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    #start-screen .go-header { color: var(--orange); }
 
     /* ── Success glow ── */
     #device.success {
@@ -458,6 +468,17 @@
   <div class="dev-foot">
     <span class="foot-txt">Word Game Unit &mdash; S/N 4096</span>
     <span class="foot-txt">&copy; 2026</span>
+  </div>
+
+  <div id="start-screen" class="active">
+    <span class="corner tl"></span>
+    <span class="corner tr"></span>
+    <span class="corner bl"></span>
+    <span class="corner br"></span>
+    <div class="go-header">&#x2014; Anagram &#x2014;</div>
+    <div class="go-lbl">Model AG&#x2013;01 &nbsp;/&nbsp; Rev.3</div>
+    <div class="ss-meta">10 seconds &nbsp;&bull;&nbsp; 3 lives</div>
+    <button id="start-btn" onclick="startGame()">Start Game</button>
   </div>
 
   <div id="game-over">
@@ -556,6 +577,11 @@
   ];
 
   const wordList = [...new Set(WORDS)].filter(w => w.length >= 4);
+  const wordSet  = new Set(wordList);
+
+  function isAnagram(a, b) {
+    return a.length === b.length && [...a].sort().join('') === [...b].sort().join('');
+  }
 
   let currentWord = '';
   let score = 0;
@@ -700,7 +726,7 @@
     const guess = input.value.trim().toLowerCase();
     if (!guess) return;
 
-    if (guess === currentWord) {
+    if (guess === currentWord || (wordSet.has(guess) && isAnagram(guess, currentWord))) {
       stopTimer();
       score++; streak++;
       updateBoard();
@@ -724,6 +750,11 @@
     document.getElementById('game-over').classList.add('active');
   }
 
+  function startGame() {
+    document.getElementById('start-screen').classList.remove('active');
+    newRound();
+  }
+
   function restartGame() {
     score = 0; streak = 0; lives = MAX_LIVES;
     updateBoard();
@@ -735,8 +766,6 @@
   document.getElementById('guess').addEventListener('keydown', e => {
     if (e.key === 'Enter') checkGuess();
   });
-
-  newRound();
 </script>
 
 </body>
