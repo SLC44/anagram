@@ -9,13 +9,13 @@
   <style>
     :root {
       --bg:          #090909;
-      --surface:     #111111;
-      --panel:       #0C0C0C;
+      --surface:     #131313;
+      --panel:       #0E0E0E;
       --orange:      #FF5C00;
       --orange-glow: #FF5C0020;
       --white:       #E6E6E6;
-      --muted:       #3D3D3D;
-      --border:      #1E1E1E;
+      --muted:       #686868;
+      --border:      #2C2C2C;
       --red:         #CC2200;
     }
 
@@ -35,11 +35,11 @@
 
     /* ── Device shell ── */
     #device {
-      width: 520px;
+      width: 640px;
       max-width: calc(100vw - 2rem);
       background: var(--surface);
       border: 1px solid var(--border);
-      padding: 2.5rem 2.5rem 2rem;
+      padding: 3rem 3rem 2.5rem;
       position: relative;
     }
 
@@ -111,22 +111,22 @@
 
     #tiles {
       display: flex;
-      gap: 5px;
+      gap: 7px;
       justify-content: center;
       flex-wrap: wrap;
-      min-height: 56px;
+      min-height: 68px;
       align-items: center;
     }
 
     .tile {
-      width: 44px;
-      height: 50px;
-      background: #141414;
-      border: 1px solid #262626;
+      width: 52px;
+      height: 60px;
+      background: #1C1C1C;
+      border: 1px solid #383838;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
+      font-size: 1.55rem;
       font-weight: 700;
       color: var(--orange);
       text-transform: uppercase;
@@ -140,8 +140,8 @@
       position: absolute;
       bottom: 3px;
       right: 4px;
-      font-size: 0.37rem;
-      color: #2C2C2C;
+      font-size: 0.4rem;
+      color: #505050;
       font-weight: 400;
     }
 
@@ -167,7 +167,7 @@
       align-items: center;
       margin-top: 0.9rem;
       padding-top: 0.7rem;
-      border-top: 1px solid #161616;
+      border-top: 1px solid #282828;
     }
 
     #length-lbl {
@@ -196,9 +196,9 @@
     }
 
     .pip {
-      width: 8px;
-      height: 8px;
-      border: 1px solid #2E2E2E;
+      width: 9px;
+      height: 9px;
+      border: 1px solid #484848;
       background: transparent;
       transition: background 0.2s, border-color 0.2s;
     }
@@ -227,7 +227,7 @@
       caret-color: var(--orange);
       transition: border-color 0.15s;
     }
-    #guess::placeholder { color: #252525; letter-spacing: 0.1em; }
+    #guess::placeholder { color: #3C3C3C; letter-spacing: 0.1em; }
     #guess:focus         { border-color: var(--orange); }
     #guess:disabled      { opacity: 0.25; }
 
@@ -247,7 +247,7 @@
     }
     #enter-btn:hover    { background: #FF7733; }
     #enter-btn:active   { background: #CC4A00; }
-    #enter-btn:disabled { background: #222; color: #3A3A3A; cursor: default; }
+    #enter-btn:disabled { background: #2A2A2A; color: #555; cursor: default; }
 
     /* ── Message bar ── */
     #msg-bar {
@@ -266,6 +266,26 @@
       text-transform: uppercase;
     }
 
+    /* ── Continue button ── */
+    #continue-btn {
+      display: none;
+      width: 100%;
+      background: var(--orange);
+      color: #000;
+      border: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 1.75rem;
+      transition: background 0.1s;
+    }
+    #continue-btn:hover  { background: #FF7733; }
+    #continue-btn:active { background: #CC4A00; }
+
     /* ── Stats ── */
     .stats {
       display: flex;
@@ -281,7 +301,7 @@
     }
 
     .stat-val {
-      font-size: 2.4rem;
+      font-size: 2.8rem;
       font-weight: 700;
       line-height: 1;
       color: var(--white);
@@ -302,13 +322,13 @@
       font-size: 0.42rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #242424;
+      color: #444444;
     }
 
     /* ── Timer bar ── */
     #timer-track {
       height: 3px;
-      background: #141414;
+      background: #222222;
       margin-top: 1rem;
       overflow: hidden;
     }
@@ -500,6 +520,8 @@
     <span id="msg-text"></span>
   </div>
 
+  <button id="continue-btn" onclick="continueRound()">Continue</button>
+
   <div class="stats">
     <div class="stat">
       <div class="lbl">Score</div>
@@ -684,14 +706,22 @@
     updateLives();
     updateBoard();
     renderTiles(currentWord);
-    setMsg(`Time’s up — ${currentWord.toUpperCase()}`, '#CC2200');
-    document.getElementById('guess').disabled = true;
-    document.getElementById('enter-btn').disabled = true;
+    document.getElementById(‘guess’).disabled = true;
+    document.getElementById(‘enter-btn’).disabled = true;
     if (lives <= 0) {
+      setMsg(`Time’s up — ${currentWord.toUpperCase()}`, ‘#CC2200’);
       setTimeout(gameOver, 1800);
     } else {
-      setTimeout(newRound, 1800);
+      setMsg(`Time’s up — the word was ${currentWord.toUpperCase()}`, ‘#CC2200’);
+      document.getElementById(‘msg-bar’).style.marginBottom = ‘0.6rem’;
+      document.getElementById(‘continue-btn’).style.display = ‘block’;
     }
+  }
+
+  function continueRound() {
+    document.getElementById(‘continue-btn’).style.display = ‘none’;
+    document.getElementById(‘msg-bar’).style.marginBottom = ‘’;
+    newRound();
   }
 
   function setMsg(text, color) {
@@ -712,6 +742,8 @@
     document.getElementById('guess').value = '';
     document.getElementById('guess').disabled = false;
     document.getElementById('enter-btn').disabled = false;
+    document.getElementById('continue-btn').style.display = 'none';
+    document.getElementById('msg-bar').style.marginBottom = '';
     setMsg('', '');
     startTimer();
     document.getElementById('guess').focus();
