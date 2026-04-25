@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
-  <title>ANAGRAM — AG-01</title>
+  <title>Scrambled</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
@@ -428,7 +428,7 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 2.8rem;
+      margin-bottom: 1.8rem;
     }
 
     #start-btn {
@@ -447,6 +447,18 @@
 
     #start-btn:hover  { background: #FF7733; }
     #start-btn:active { background: #CC4A00; }
+
+    .ss-instructions {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      opacity: 0.55;
+      text-align: center;
+      max-width: 22em;
+      line-height: 1.8;
+      margin-bottom: 2.8rem;
+      text-transform: uppercase;
+    }
 
     /* ── Success glow ── */
     #device.success {
@@ -498,8 +510,9 @@
 <body>
 
 <div id="start-screen" class="active">
-  <div class="ss-title">Anagram</div>
-  <div class="ss-sub">Model AG&#x2013;01 &nbsp;&bull;&nbsp; 10 sec &nbsp;&bull;&nbsp; 3 lives</div>
+  <div class="ss-title">Scrambled</div>
+  <div class="ss-sub">10 sec &nbsp;&bull;&nbsp; 3 lives</div>
+  <div class="ss-instructions">Unscramble the letters to find the hidden word<br>before the timer runs out &mdash; see how many you can get</div>
   <button id="start-btn" onclick="startGame()">Start Game</button>
 </div>
 
@@ -511,7 +524,7 @@
 
   <div class="hdr">
     <div>
-      <div class="brand-name">Anagram</div>
+      <div class="brand-name">Scrambled</div>
       <div class="brand-sub">Model AG&#x2013;01 &nbsp;/&nbsp; Rev.3</div>
     </div>
     <div class="led"></div>
