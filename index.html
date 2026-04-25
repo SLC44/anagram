@@ -764,6 +764,7 @@
   let streak = 0;
   let lives = MAX_LIVES;
   let timerTimeout = null;
+  let highScoreBeaten = false;
 
   const pad = n => String(n).padStart(2, '0');
 
@@ -943,8 +944,9 @@
     score++; streak++;
     updateBoard();
     const prev = parseInt(localStorage.getItem('scrambled-hs') || '0', 10);
-    const isNewHigh = score > prev;
+    const isNewHigh = !highScoreBeaten && score > prev;
     if (isNewHigh) {
+      highScoreBeaten = true;
       localStorage.setItem('scrambled-hs', score);
       setMsg('New High Score!', '#FF5C00');
       winTiles();
@@ -1018,7 +1020,7 @@
   }
 
   function restartGame() {
-    score = 0; streak = 0; lives = MAX_LIVES;
+    score = 0; streak = 0; lives = MAX_LIVES; highScoreBeaten = false;
     updateBoard();
     updateLives();
     document.getElementById('game-over').classList.remove('active');
