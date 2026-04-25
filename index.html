@@ -395,6 +395,18 @@
       font-variant-numeric: tabular-nums;
     }
 
+    #game-over.new-high .go-header  { color: var(--orange); }
+    #game-over.new-high .go-hs-row  { display: none; }
+    #game-over.new-high .go-score   {
+      color: var(--orange);
+      animation: score-flash 0.55s ease-in-out 5 0.2s;
+      animation-fill-mode: forwards;
+    }
+    @keyframes score-flash {
+      0%,100% { color: var(--orange); text-shadow: 0 0 50px rgba(255,92,0,0.9); }
+      50%     { color: var(--white);  text-shadow: none; }
+    }
+
     #restart-btn {
       background: transparent;
       color: var(--orange);
@@ -643,8 +655,8 @@
     <span class="corner tr"></span>
     <span class="corner bl"></span>
     <span class="corner br"></span>
-    <div class="go-header">&#x2014; Game Over &#x2014;</div>
-    <div class="go-lbl">Final Score</div>
+    <div class="go-header" id="go-header">&#x2014; Game Over &#x2014;</div>
+    <div class="go-lbl" id="go-score-lbl">Final Score</div>
     <div class="go-score" id="go-score">00</div>
     <div class="go-hs-row">
       <span class="go-lbl">High Score</span>
@@ -1011,7 +1023,18 @@
     localStorage.setItem('scrambled-hs', hs);
     document.getElementById('go-score').textContent = pad(score);
     document.getElementById('go-hs').textContent = pad(hs);
-    document.getElementById('game-over').classList.add('active');
+    const el = document.getElementById('game-over');
+    if (highScoreBeaten) {
+      el.classList.add('new-high');
+      document.getElementById('go-header').textContent = 'New High Score!';
+      document.getElementById('go-score-lbl').textContent = 'Score';
+      bigConfetti();
+    } else {
+      el.classList.remove('new-high');
+      document.getElementById('go-header').innerHTML = '— Game Over —';
+      document.getElementById('go-score-lbl').textContent = 'Final Score';
+    }
+    el.classList.add('active');
   }
 
   function startGame() {
@@ -1023,7 +1046,8 @@
     score = 0; streak = 0; lives = MAX_LIVES; highScoreBeaten = false;
     updateBoard();
     updateLives();
-    document.getElementById('game-over').classList.remove('active');
+    const el = document.getElementById('game-over');
+    el.classList.remove('active', 'new-high');
     newRound();
   }
 
